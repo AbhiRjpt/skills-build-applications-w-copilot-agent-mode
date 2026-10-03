@@ -1,33 +1,48 @@
 
+import { useEffect, useState } from 'react';
+import { getApiCollection, getApiUrl } from '../api';
+
 const Workouts = () => {
   const [workouts, setWorkouts] = useState([]);
   useEffect(() => {
-    const codespace = process.env.REACT_APP_CODESPACE_NAME;
-    const url = codespace
-      ? `https://${codespace}-8000.app.github.dev/api/workouts/`
-      : 'http://localhost:8000/api/workouts/';
-    console.log('Fetching workouts from:', url);
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        const results = data.results || data;
-        setWorkouts(results);
-        console.log('Fetched workouts:', results);
-      });
+    let isCurrent = true;
+    const endpoint = getApiUrl('workouts');
+    console.log('Fetching workouts from:', endpoint);
+
+    async function loadWorkouts() {
+      try {
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('Fetched workouts:', data);
+        if (isCurrent) setWorkouts(getApiCollection(data));
+      } catch (error) {
+        console.error('Failed to fetch workouts:', error);
+      }
+    }
+
+    loadWorkouts();
+    return () => { isCurrent = false; };
   }, []);
   return (
-    <div className="card mb-4">
-      <div className="card-body">
-        <h2 className="card-title mb-4">Workouts</h2>
+    <section className="card data-card mb-4">
+      <div className="card-header">
+        <h2 className="card-title h4">Workouts</h2>
+        <span className="badge rounded-pill data-count">{workouts.length} total</span>
+      </div>
+      <div className="card-body p-0">
         <div className="table-responsive">
-          <table className="table table-striped table-bordered">
-            <thead className="thead-dark">
+          <table className="table table-hover align-middle data-table mb-0" aria-label="Workouts">
+            <thead className="table-light">
               <tr>
-                <th>Name</th>
-                <th>Description</th>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
               </tr>
             </thead>
             <tbody>
+              {workouts.length === 0 && <tr><td className="data-empty text-center py-4" colSpan="2">No workouts yet.</td></tr>}
               {workouts.map((w, i) => (
                 <tr key={i}>
                   <td>{w.name}</td>
@@ -38,7 +53,7 @@ const Workouts = () => {
           </table>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 export default Workouts;

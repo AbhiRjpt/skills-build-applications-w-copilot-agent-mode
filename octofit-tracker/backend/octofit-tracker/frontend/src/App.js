@@ -1,40 +1,45 @@
 
+import { Link, NavLink, Navigate, Route, Routes } from 'react-router-dom';
+import Activities from './components/Activities';
+import Leaderboard from './components/Leaderboard';
+import Teams from './components/Teams';
+import Users from './components/Users';
+import Workouts from './components/Workouts';
+import './App.css';
+
 function App() {
   return (
-    <Router>
-      <div className="container mt-4">
-        <nav className="navbar navbar-expand-lg navbar-dark bg-primary mb-4 rounded">
-          <div className="container-fluid">
-            <Link className="navbar-brand d-flex align-items-center fw-bold" to="/">
-              <img src={logo} alt="OctoFit Logo" style={{height: 40, marginRight: 12}} />
+    <div className="app-shell">
+      <header className="container pt-3">
+        <nav className="navbar navbar-expand-lg navbar-dark app-navbar px-3 py-2">
+          <div className="container-fluid px-1">
+            <Link className="navbar-brand d-flex align-items-center" to="/activities">
+              <img src={`${process.env.PUBLIC_URL}/octofitapp-small.png`} alt="OctoFit Logo" width="40" height="40" className="me-2" />
               OctoFit Tracker
             </Link>
-            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="navbarNav">
-              <ul className="navbar-nav">
-                <li className="nav-item"><Link className="nav-link" to="/activities">Activities</Link></li>
-                <li className="nav-item"><Link className="nav-link" to="/leaderboard">Leaderboard</Link></li>
-                <li className="nav-item"><Link className="nav-link" to="/teams">Teams</Link></li>
-                <li className="nav-item"><Link className="nav-link" to="/users">Users</Link></li>
-                <li className="nav-item"><Link className="nav-link" to="/workouts">Workouts</Link></li>
-              </ul>
-            </div>
+            <ul className="navbar-nav flex-row flex-wrap gap-1">
+              <li className="nav-item"><NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/activities">Activities</NavLink></li>
+              <li className="nav-item"><NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/leaderboard">Leaderboard</NavLink></li>
+              <li className="nav-item"><NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/teams">Teams</NavLink></li>
+              <li className="nav-item"><NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/users">Users</NavLink></li>
+              <li className="nav-item"><NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/workouts">Workouts</NavLink></li>
+            </ul>
           </div>
         </nav>
+      </header>
+      <main className="container app-content py-4 pb-5">
         <Routes>
           <Route path="/activities" element={<Activities />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/teams" element={<Teams />} />
           <Route path="/users" element={<Users />} />
           <Route path="/workouts" element={<Workouts />} />
-          <Route path="/" element={<Activities />} />
+          <Route path="/" element={<Navigate to="/activities" replace />} />
+          <Route path="*" element={<Navigate to="/activities" replace />} />
         </Routes>
-      </div>
-    </Router>
+      </main>
+    </div>
   );
 }
-import logo from '../public/octofitapp-small.png';
 
 export default App;
